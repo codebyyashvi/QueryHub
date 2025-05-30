@@ -1,0 +1,12 @@
+langchain==0.3.25
+langchain_google_genai==2.1.5
+google_generativeai==0.1.4
+faiss-cpu==1.7.4
+moviepy==1.0.3
+protobuf==6.31.0
+pydub==0.25.1
+PyPDF2==3.0.1
+python-dotenv==1.1.0
+speechrecognition==3.14.2
+streamlit==1.45.1
+pytube==15.0.0
