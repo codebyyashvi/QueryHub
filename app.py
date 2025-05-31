@@ -135,10 +135,10 @@ def main():
         """,
         unsafe_allow_html=True
     )
-    st.title("Chat with PDFs and Videos")
+    st.title("Ask from Youtube, Videos and Docs")
 
     # Input for user question
-    user_question = st.text_input("Ask a question about the uploaded PDFs or videos:")
+    user_question = st.text_input("Ask a question about the uploaded youtube links or Pdfs and videos:")
     if user_question:
         user_input(user_question)
 
