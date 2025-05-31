@@ -71,7 +71,7 @@ def user_input(user_question):
 
 def main():
 
-    st.set_page_config(page_title="Chat with PDFs and Videos", page_icon=":robot:")
+    st.set_page_config(page_title="Ask from Youtube, Videos and Docs", page_icon=":robot:")
     st.markdown(
         """
          <style>
