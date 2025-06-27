@@ -74,3 +74,5 @@ def process_youtube_video(youtube_url):
     finally:
         if os.path.exists(wav_audio_path):
             os.remove(wav_audio_path)
+        if os.path.exists(mp4_audio_path):
+            os.remove(mp4_audio_path)
