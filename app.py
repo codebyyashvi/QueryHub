@@ -14,6 +14,7 @@ from pdf import get_pdf_text
 from video import process_video
 from youtube import process_youtube_video
 from vector import get_vector_store, get_text_chunks
+from langchain.schema import Document
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
