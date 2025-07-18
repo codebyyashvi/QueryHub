@@ -77,34 +77,47 @@
 #         if os.path.exists(mp4_audio_path):
 #             os.remove(mp4_audio_path)
 
-from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
-from youtube_transcript_api.formatters import TextFormatter
+# from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+# from youtube_transcript_api.formatters import TextFormatter
 
-def extract_video_id(url):
-    if "youtu.be/" in url:
-        return url.split("youtu.be/")[1].split("?")[0]
-    elif "youtube.com/watch?v=" in url:
-        return url.split("v=")[1].split("&")[0]
-    return None
+# def extract_video_id(url):
+#     if "youtu.be/" in url:
+#         return url.split("youtu.be/")[1].split("?")[0]
+#     elif "youtube.com/watch?v=" in url:
+#         return url.split("v=")[1].split("&")[0]
+#     return None
 
-def get_transcript_text(video_id):
-    ytt_api = YouTubeTranscriptApi()
-    transcript = ytt_api.get_transcript(video_id)
-    return transcript
+# def get_transcript_text(video_id):
+#     ytt_api = YouTubeTranscriptApi()
+#     transcript = ytt_api.get_transcript(video_id)
+#     return transcript
+
+# def process_youtube_video(youtube_url):
+#     video_id = extract_video_id(youtube_url)
+#     if not video_id:
+#         return "Invalid YouTube URL. Please provide a valid one."
+
+#     try:
+#         transcript = get_transcript_text(video_id)
+#         # return "\n".join([snippet.text for snippet in transcript.fetch()])
+#         return " ".join([entry['text'] for entry in transcript])
+
+#     except TranscriptsDisabled:
+#         return "Transcripts are disabled for this video."
+#     except NoTranscriptFound:
+#         return "No transcript available for this video."
+#     except Exception as e:
+#         return f"Error fetching transcript: {e}"
+
+import requests
+
+PROXY_URL = "https://1fe5bdfdea4a.ngrok-free.app/transcript"  
 
 def process_youtube_video(youtube_url):
-    video_id = extract_video_id(youtube_url)
-    if not video_id:
-        return "Invalid YouTube URL. Please provide a valid one."
-
     try:
-        transcript = get_transcript_text(video_id)
-        # return "\n".join([snippet.text for snippet in transcript.fetch()])
-        return " ".join([entry['text'] for entry in transcript])
-
-    except TranscriptsDisabled:
-        return "Transcripts are disabled for this video."
-    except NoTranscriptFound:
-        return "No transcript available for this video."
+        response = requests.post(PROXY_URL, json={"url": youtube_url})
+        response.raise_for_status()
+        data = response.json()
+        return data.get("transcript") or f"Error: {data.get('error', 'Unknown error')}"
     except Exception as e:
-        return f"Error fetching transcript: {e}"
+        return f"Failed to fetch transcript from proxy server: {e}"
