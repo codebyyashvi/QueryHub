@@ -2,12 +2,7 @@
 
 import streamlit as st
 import os
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
-from langchain.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 import logging
 from pdf import get_pdf_text
@@ -30,41 +25,43 @@ if not GOOGLE_API_KEY:
 # Configure Google Generative AI
 genai.configure(api_key=GOOGLE_API_KEY)
 
-def get_conversation_chain():
-    """Create a conversation chain for question answering."""
-    try:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
-        prompt = PromptTemplate(
-            input_variables=["context", "question"],
-            template=(
-                "You are an assistant that answers questions based on provided documents and video transcriptions. "
-                "Use the following context to answer the question accurately and concisely. "
-                "If the answer is not clear from the context, say so.\n\n"
-                "Context: {context}\n\n"
-                "Question: {question}\n\n"
-                "Answer:"
-            )
-        )
-        chain = load_qa_chain(llm, chain_type="stuff", prompt=prompt)
-        return chain
-    except Exception as e:
-        logger.error(f"Error creating conversation chain: {e}")
-        return None
+def ask_gemini(context, question):
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    prompt = f"""
+    You are an assistant that answers questions strictly based on provided documents and video transcriptions. Use the following context to answer the question accurately and concisely. 
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    If the answer is not present in the context, say "I don't have enough information."
+
+    Answer:
+    """
+    response = model.generate_content(prompt)
+    return response.text
 
 def user_input(user_question):
     """Process user question and return answer from vector store."""
     try:
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.vectorstores import FAISS
+
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": False}
+        )
+
         if not os.path.exists("faiss_index"):
             st.error("No content has been processed yet. Please upload and process files first.")
             return
         vector_store = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
         docs = vector_store.similarity_search(user_question, k=3)
-        chain = get_conversation_chain()
-        if not chain:
-            st.error("Failed to initialize conversation chain.")
-            return
-        response = chain.run(input_documents=docs, question=user_question)
+        context = "\n\n".join([doc.page_content for doc in docs])
+        response = ask_gemini(context, user_question)
         st.write("**Answer:**", response)
     except Exception as e:
         logger.error(f"Error processing user input: {e}")

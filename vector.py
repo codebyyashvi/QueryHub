@@ -1,6 +1,4 @@
 import logging
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # Set up logging
@@ -10,7 +8,14 @@ logger = logging.getLogger(__name__)
 def get_vector_store(text_chunks):
     """Create and save a FAISS vector store from text chunks."""
     try:
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.vectorstores import FAISS
+
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": False}
+        )
         vector_store = FAISS.from_texts(text_chunks, embeddings)
         vector_store.save_local("faiss_index")
         return vector_store
