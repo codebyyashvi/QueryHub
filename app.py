@@ -8,7 +8,7 @@ import logging
 from pdf import get_pdf_text
 from video import process_video
 from youtube import process_youtube_video
-from vector import get_vector_store, get_text_chunks
+from vector import get_vector_store, get_text_chunks, clear_vector_store
 from langchain.schema import Document
 
 # Set up logging
@@ -164,6 +164,7 @@ def main():
                     
 
         if st.button("Submit & Process"):
+            clear_vector_store()
             if not uploaded_files:
                 st.error("Please upload at least one PDF or video file.")
             else:

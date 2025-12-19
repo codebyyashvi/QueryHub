@@ -1,9 +1,17 @@
 import logging
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import shutil
+import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def clear_vector_store(path="faiss_index"):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        logger.info("Old FAISS index cleared.")
+
 
 def get_vector_store(text_chunks):
     """Create and save a FAISS vector store from text chunks."""
