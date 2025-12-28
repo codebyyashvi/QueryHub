@@ -16,14 +16,13 @@ def clear_vector_store(path="faiss_index"):
 def get_vector_store(text_chunks):
     """Create and save a FAISS vector store from text chunks."""
     try:
-        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.embeddings import SentenceTransformerEmbeddings
         from langchain_community.vectorstores import FAISS
 
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": False}
+        embeddings = SentenceTransformerEmbeddings(
+            model_name="all-MiniLM-L6-v2"
         )
+
         vector_store = FAISS.from_texts(text_chunks, embeddings)
         vector_store.save_local("faiss_index")
         return vector_store

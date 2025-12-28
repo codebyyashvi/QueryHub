@@ -46,13 +46,11 @@ def ask_gemini(context, question):
 def user_input(user_question):
     """Process user question and return answer from vector store."""
     try:
-        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.embeddings import SentenceTransformerEmbeddings
         from langchain_community.vectorstores import FAISS
 
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": False}
+        embeddings = SentenceTransformerEmbeddings(
+            model_name="all-MiniLM-L6-v2"
         )
 
         if not os.path.exists("faiss_index"):
