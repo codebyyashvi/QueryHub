@@ -62,7 +62,7 @@ langchain-community==0.0.38
 langchain-core==0.1.53
 langchain-google-genai==2.0.10
 langchain-text-splitters==0.0.2
-langsmith==0.3.42
+langsmith==0.1.147
 MarkupSafe==3.0.2
 marshmallow==3.26.1
 matplotlib-inline==0.1.7
